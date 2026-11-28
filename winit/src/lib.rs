@@ -1445,23 +1445,16 @@ fn run_action<'a, P, C>(
                 }
             }
             window::Action::Resize(id, size) => {
-                if let Some(window) = window_manager.get_mut(id)
-                    && let Some(new_size) = window.raw.request_inner_size(
+                if let Some(window) = window_manager.get_mut(id) {
+                    let _ = window.raw.request_inner_size(
                         winit::dpi::LogicalSize {
                             width: size.width,
                             height: size.height,
-                        },
-                    )
-                {
-                    window.state.synchronize(&program, id, &window.raw);
-                    if let Some(compositor) = compositor {
-                        compositor.configure_surface(
-                            &mut window.surface,
-                            new_size.width,
-                            new_size.height,
-                        );
-                    }
-                    window.raw.request_redraw();
+                        }
+                        .to_physical::<f32>(f64::from(
+                            window.state.scale_factor(),
+                        )),
+                    );
                 }
             }
             window::Action::SetMinSize(id, size) => {
