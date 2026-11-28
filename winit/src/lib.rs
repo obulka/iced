@@ -1465,6 +1465,7 @@ fn run_action<'a, P, C>(
                             ),
                         )),
                     ));
+                    window.raw.request_redraw();
                 }
             }
             window::Action::SetMinSize(id, size) => {
