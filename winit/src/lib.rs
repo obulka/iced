@@ -1445,8 +1445,8 @@ fn run_action<'a, P, C>(
                 }
             }
             window::Action::Resize(id, size) => {
-                if let Some(window) = window_manager.get_mut(id) {
-                    let _ = window.raw.request_inner_size(
+                if let Some(window) = window_manager.get_mut(id)
+                    && let Some(new_size) = window.raw.request_inner_size(
                         winit::dpi::LogicalSize {
                             width: size.width,
                             height: size.height,
@@ -1454,7 +1454,17 @@ fn run_action<'a, P, C>(
                         .to_physical::<f32>(f64::from(
                             window.state.scale_factor(),
                         )),
-                    );
+                    )
+                {
+                    events.push((
+                        id,
+                        core::Event::Window(core::window::Event::Resized(
+                            Size::new(
+                                new_size.width as f32,
+                                new_size.height as f32,
+                            ),
+                        )),
+                    ));
                 }
             }
             window::Action::SetMinSize(id, size) => {
